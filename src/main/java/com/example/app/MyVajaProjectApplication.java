@@ -19,14 +19,23 @@ public class MyVajaProjectApplication {
     @ResponseBody
     public String home() {
         return """
-            <h2>Hello from my-vaja-project (Spring Boot)</h2>
-            <a href="/contact">Go to Contact Page</a>
+            <h2>Welcome to my-vaja-project</h2>
+            <ul>
+                <li><a href="/contact">Contact Us</a></li>
+                <li><a href="/about">About Us</a></li>
+            </ul>
         """;
     }
 
-    // Contact page (HTML)
+    // Contact page
     @GetMapping("/contact")
     public String contactPage() {
-        return "contact"; // maps to contact.html
+        return "contact";
+    }
+
+    // About Us page
+    @GetMapping("/about")
+    public String aboutPage() {
+        return "about";
     }
 }
