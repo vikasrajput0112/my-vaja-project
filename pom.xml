@@ -4,32 +4,33 @@
          xsi:schemaLocation="
            http://maven.apache.org/POM/4.0.0
            http://maven.apache.org/xsd/maven-4.0.0.xsd">
-         
-    <!-- REQUIRED -->
+
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- PROJECT COORDINATES -->
     <groupId>com.example</groupId>
     <artifactId>my-vaja-project</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <!-- JAVA VERSION -->
     <properties>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <!-- DEPENDENCIES (empty is fine for now) -->
     <dependencies>
-        <!-- Add dependencies later if needed -->
+        <!-- JUnit 5 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
-    <!-- BUILD CONFIGURATION -->
     <build>
         <plugins>
 
-            <!-- Compile with Java 21 -->
+            <!-- Java 21 compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -39,7 +40,14 @@
                 </configuration>
             </plugin>
 
-            <!-- Make the JAR runnable -->
+            <!-- JUnit 5 test runner -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
+
+            <!-- Runnable JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
