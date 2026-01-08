@@ -70,15 +70,15 @@ pipeline {
             }
         }
 
-        stage('Docker Cleanup (Keep last 5 images)') {
+        stage('Docker Cleanup (Keep last 2 images)') {
     steps {
-        echo "🧹 Cleaning old Docker images (keeping latest 5)..."
+        echo "🧹 Cleaning old Docker images (keeping latest 2)..."
         sh '''
-            # Get all tags for my-vaja-project, sort numerically, skip last 5
+            # Get all tags for my-vaja-project, sort numerically, skip last 2
             OLD_IMAGES=$(docker images my-vaja-project --format "{{.Tag}}" \
               | grep -E '^[0-9]+$' \
               | sort -n \
-              | head -n -5)
+              | head -n -3)
 
             if [ -n "$OLD_IMAGES" ]; then
               for TAG in $OLD_IMAGES; do
