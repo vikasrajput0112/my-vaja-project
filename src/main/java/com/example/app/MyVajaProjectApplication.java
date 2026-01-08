@@ -15,6 +15,6 @@ public class MyVajaProjectApplication {
 
     @GetMapping("/")
     public String home() {
-        return "Hello from my-vaja-project (Spring Boot)!";
+        return "Hello from my-vaja-project .....!";
     }
 }
