@@ -88,6 +88,9 @@ pipeline {
             else
               echo "No old images to delete"
             fi
+
+            echo "➡️ Removing dangling images..."
+            docker image prune -f
         '''
     }
 }
