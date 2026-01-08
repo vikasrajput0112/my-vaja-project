@@ -2,20 +2,27 @@ pipeline {
     agent any
 
     environment {
-        // Explicitly pin Java 21 (VERY IMPORTANT)
+        // Force Java 21
         JAVA_HOME = "/usr/lib/jvm/java-21-openjdk-amd64"
         PATH = "${JAVA_HOME}/bin:${env.PATH}"
+
+        // Docker image name
+        IMAGE_NAME = "my-vaja-project"
+
+        // Docker tag = Jenkins build number (NO CONFUSION)
+        IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
     stages {
 
         stage('Checkout') {
             steps {
+                echo "📥 Checking out source code..."
                 checkout scm
             }
         }
 
-        stage('Verify Java Version') {
+        stage('Verify Java') {
             steps {
                 sh '''
                     echo "Java version:"
@@ -26,46 +33,61 @@ pipeline {
             }
         }
 
-        stage('Clean') {
+        stage('Build with Maven') {
             steps {
-                sh 'mvn clean'
+                echo "🔨 Building project with Maven..."
+                sh 'mvn clean package'
             }
         }
 
-        stage('Compile') {
+        stage('Verify Artifact') {
             steps {
-                sh 'mvn compile'
+                echo "📦 Verifying JAR artifact..."
+                sh 'ls -lh target'
             }
         }
 
-        stage('Test') {
+        stage('Docker Build') {
             steps {
-                sh 'mvn test'
+                echo "🐳 Building Docker image with tag ${IMAGE_TAG}..."
+                sh '''
+                    docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                '''
             }
         }
 
-        stage('Package') {
+        stage('Docker Run') {
             steps {
-                sh 'mvn package'
+                echo "▶️ Running Docker container..."
+
+                sh '''
+                    # Stop and remove old container if exists
+                    docker rm -f ${IMAGE_NAME} || true
+
+                    # Run container using BUILD_NUMBER tag
+                    docker run -d --name ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}
+                '''
             }
         }
 
-        stage('Archive Artifact') {
+        stage('Show Application Output') {
             steps {
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                echo "📜 Application output:"
+                sh '''
+                    sleep 3
+                    docker logs ${IMAGE_NAME}
+                '''
             }
         }
     }
 
     post {
         success {
-            echo '✅ Build SUCCESSFUL – my-vaja-project'
+            echo "✅ PIPELINE SUCCESSFUL – Docker image tagged with build number: ${BUILD_NUMBER}"
         }
         failure {
-            echo '❌ Build FAILED – check logs'
+            echo "❌ PIPELINE FAILED – check logs above"
         }
-        always {
-            cleanWs()
-        }
+        // Workspace intentionally NOT cleaned
     }
 }
