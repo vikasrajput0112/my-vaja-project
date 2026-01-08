@@ -1,96 +1,29 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="
-           http://maven.apache.org/POM/4.0.0
-           https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<build>
+    <plugins>
 
-    <!-- ========================= -->
-    <!-- Project Metadata          -->
-    <!-- ========================= -->
-    <modelVersion>4.0.0</modelVersion>
+        <!-- Compiler plugin -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.13.0</version>
+            <configuration>
+                <release>21</release>
+            </configuration>
+        </plugin>
 
-    <groupId>com.example</groupId>
-    <artifactId>my-vaja-project</artifactId>
-    <version>1.0.0</version>
-    <packaging>jar</packaging>
+        <!-- JAR plugin (THIS FIXES THE ERROR) -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.4.2</version>
+            <configuration>
+                <archive>
+                    <manifest>
+                        <mainClass>com.example.app.App</mainClass>
+                    </manifest>
+                </archive>
+            </configuration>
+        </plugin>
 
-    <name>my-vaja-project</name>
-    <description>Modern Java project with single-step Maven build</description>
-
-    <!-- ========================= -->
-    <!-- Properties (Centralized)  -->
-    <!-- ========================= -->
-    <properties>
-        <!-- Java LTS -->
-        <java.version>21</java.version>
-
-        <!-- Plugin Versions -->
-        <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
-        <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
-
-        <!-- Dependency Versions -->
-        <junit.jupiter.version>5.10.2</junit.jupiter.version>
-        <slf4j.version>2.0.13</slf4j.version>
-        <logback.version>1.5.6</logback.version>
-
-        <!-- Encoding -->
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <!-- ========================= -->
-    <!-- Dependencies              -->
-    <!-- ========================= -->
-    <dependencies>
-
-        <!-- JUnit 5: Unit testing framework -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit.jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- SLF4J: Logging API -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-
-        <!-- Logback: Logging implementation -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
-
-    </dependencies>
-
-    <!-- ========================= -->
-    <!-- Build Plugins             -->
-    <!-- ========================= -->
-    <build>
-        <plugins>
-
-            <!-- Java Compiler Plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.plugin.version}</version>
-                <configuration>
-                    <release>${java.version}</release>
-                </configuration>
-            </plugin>
-
-            <!-- Test Execution Plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven.surefire.plugin.version}</version>
-            </plugin>
-
-        </plugins>
-    </build>
-
-</project>
+    </plugins>
+</build>
