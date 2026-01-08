@@ -13,6 +13,7 @@ pipeline {
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
+    
     stages {
 
         stage('Checkout') {
