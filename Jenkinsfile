@@ -2,18 +2,11 @@ pipeline {
     agent any
 
     environment {
-        // Force Java 21
-        JAVA_HOME = "/usr/lib/jvm/java-21-openjdk-amd64"
-        PATH = "${JAVA_HOME}/bin:${env.PATH}"
-
-        // Docker image name
-        IMAGE_NAME = "my-vaja-project"
-
-        // Docker tag = Jenkins build number (NO CONFUSION)
+        APP_NAME = "my-vaja-project"
+        APP_PORT = "8081"
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
-    
     stages {
 
         stage('Checkout') {
@@ -43,78 +36,72 @@ pipeline {
 
         stage('Verify Artifact') {
             steps {
-                echo "📦 Verifying JAR artifact..."
-                sh 'ls -lh target'
+                echo "✅ Verifying Spring Boot JAR..."
+                sh 'java -jar target/my-vaja-project-1.0.0.jar & sleep 10; pkill -f my-vaja-project || true'
             }
         }
 
         stage('Docker Build') {
             steps {
-                echo "🐳 Building Docker image with tag ${IMAGE_TAG}..."
+                echo "🐳 Building Docker image..."
                 sh '''
-                    docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                    docker build -t ${APP_NAME}:${IMAGE_TAG} .
                 '''
             }
         }
 
         stage('Docker Run') {
             steps {
-                echo "▶️ Running Docker container..."
+                echo "🚀 Running Docker container on port ${APP_PORT}..."
 
                 sh '''
-                    # Stop and remove old container if exists
-                    docker rm -f ${IMAGE_NAME} || true
+                    # Stop & remove old container if exists
+                    docker stop ${APP_NAME} || true
+                    docker rm ${APP_NAME} || true
 
-                    # Run container using BUILD_NUMBER tag
-                    docker run -d --name ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}
+                    # Run new container with port mapping
+                    docker run -d \
+                      -p ${APP_PORT}:${APP_PORT} \
+                      --name ${APP_NAME} \
+                      ${APP_NAME}:${IMAGE_TAG}
                 '''
             }
         }
 
-        stage('Docker Cleanup (Keep last 2 images)') {
-    steps {
-        echo "🧹 Cleaning old Docker images (keeping latest 2)..."
-        sh '''
-            # Get all tags for my-vaja-project, sort numerically, skip last 2
-            OLD_IMAGES=$(docker images my-vaja-project --format "{{.Tag}}" \
-              | grep -E '^[0-9]+$' \
-              | sort -n \
-              | head -n -3)
-
-            if [ -n "$OLD_IMAGES" ]; then
-              for TAG in $OLD_IMAGES; do
-                echo "Deleting my-vaja-project:$TAG"
-                docker rmi my-vaja-project:$TAG || true
-              done
-            else
-              echo "No old images to delete"
-            fi
-
-            echo "➡️ Removing dangling images..."
-            docker image prune -f
-        '''
-    }
-}
-
-
-        stage('Show Application Output') {
+        stage('Docker Cleanup (Keep last 2 + prune)') {
             steps {
-                echo "📜 Application output:"
+                echo "🧹 Cleaning old Docker images and dangling layers..."
                 sh '''
-                    sleep 3
-                    docker logs ${IMAGE_NAME}
+                    OLD_IMAGES=$(docker images ${APP_NAME} --format "{{.Tag}}" \
+                      | grep -E '^[0-9]+$' \
+                      | sort -n \
+                      | head -n -2)
+
+                    if [ -n "$OLD_IMAGES" ]; then
+                      for TAG in $OLD_IMAGES; do
+                        docker rmi ${APP_NAME}:$TAG || true
+                      done
+                    fi
+
+                    docker image prune -f
                 '''
+            }
+        }
+
+        stage('Show Application URL') {
+            steps {
+                echo "🌐 Application deployed successfully!"
+                echo "👉 Access it at: http://<SERVER-IP>:${APP_PORT}/"
             }
         }
     }
 
     post {
         success {
-            echo "✅ PIPELINE SUCCESSFUL – Docker image tagged with build number: ${BUILD_NUMBER}"
+            echo "✅ PIPELINE SUCCESS – Application is live on port ${APP_PORT}"
         }
         failure {
-            echo "❌ PIPELINE FAILED – check logs above"
+            echo "❌ PIPELINE FAILED – Check logs above"
         }
-        // Workspace intentionally NOT cleaned
     }
 }
