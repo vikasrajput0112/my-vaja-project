@@ -5,9 +5,14 @@
            http://maven.apache.org/POM/4.0.0
            http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+    <!-- ========================= -->
+    <!-- REQUIRED MAVEN METADATA  -->
+    <!-- ========================= -->
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Spring Boot parent -->
+    <!-- ========================= -->
+    <!-- SPRING BOOT PARENT       -->
+    <!-- ========================= -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -15,37 +20,59 @@
         <relativePath/>
     </parent>
 
+    <!-- ========================= -->
+    <!-- PROJECT DETAILS          -->
+    <!-- ========================= -->
     <groupId>com.example</groupId>
     <artifactId>my-vaja-project</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
+    <!-- ========================= -->
+    <!-- JAVA VERSION             -->
+    <!-- ========================= -->
     <properties>
         <java.version>21</java.version>
     </properties>
 
+    <!-- ========================= -->
+    <!-- DEPENDENCIES             -->
+    <!-- ========================= -->
     <dependencies>
-        <!-- Web support (Tomcat + REST) -->
+
+        <!-- Spring Web (Embedded Tomcat + MVC + REST) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Testing -->
+        <!-- Thymeleaf (HTML pages like Contact page) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
+    <!-- ========================= -->
+    <!-- BUILD CONFIGURATION      -->
+    <!-- ========================= -->
     <build>
         <plugins>
-            <!-- Creates executable Spring Boot JAR -->
+
+            <!-- Spring Boot plugin (creates executable JAR) -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
         </plugins>
     </build>
 
